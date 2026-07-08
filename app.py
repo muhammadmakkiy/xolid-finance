@@ -6,16 +6,16 @@ from datetime import datetime
 st.set_page_config(
     page_title="Холид Финанс Обмен валюта",
     page_icon="💸",
-    layout="centered", # Телефон учун энг қулай формат
+    layout="centered", 
     initial_sidebar_state="collapsed"
 )
 
-# Замонавий Премиум Дизайн ва СТИЛЛАР (Телефон учун ихчамлаштирилган)
+# Замонавий Премиум Дизайн ва СТИЛЛАР
 st.markdown("""
     <style>
     .main { background-color: #f8fafc; color: #0f172a; }
     
-    /* Валюталарни бир қаторда (горизонтал скролл) кўрсатиш учун контейнер */
+    /* Валюталарни бир қаторда (горизонтал скролл) кўрсатиш */
     .scroll-container {
         display: flex;
         overflow-x: auto;
@@ -97,8 +97,15 @@ if 'history' not in st.session_state:
         {"ID": 1, "Вақт": "2026-07-08 10:00:00", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "USD", "Миқдор": 100.0, "Олинди": "KGS", "Берилган Миқдор": 8600.0, "Изоҳ": "Илк савдо"}
     ]
 if 'expenses' not in st.session_state: st.session_state.expenses = []
+
+# Касса базасини доим инглизча валюталар билан тўлдириш
 if 'kassa' not in st.session_state:
-    st.session_state.kassa = {c: 100000.0 if c in ["KGS", "RUB", "UZS"] else 5000.0 for c in ALL_CURRENCIES}
+    st.session_state.kassa = {}
+
+# Эски маблағлар ёки янги маблағларни инглизча калитлар билан ишончли текшириш
+for c in ALL_CURRENCIES:
+    if c not in st.session_state.kassa:
+        st.session_state.kassa[c] = 100000.0 if c in ["KGS", "RUB", "UZS"] else 5000.0
 
 if 'debts' not in st.session_state: 
     st.session_state.debts = [
@@ -204,10 +211,10 @@ else:
             st.session_state.sub_page = "📉 Харажатлар"
             st.rerun()
             
-        # Менежер ва Директор тугмалари (Ортиқча ёзув олиб ташланди)
+        # Менежер ва Директор тугмалари
         if st.session_state.current_role in ["Менежер", "Директор"]:
             if st.button("⚙️ Курсларна Созлаш", use_container_width=True):
-                st.session_state.sub_page = "⚙️ Курсларнии Созлаш"
+                st.session_state.sub_page = "⚙️ Курсларна Созлаш"
                 st.rerun()
                 
             if st.button("🏢 Дўконларни Бошқариш", use_container_width=True):
@@ -237,7 +244,7 @@ else:
 
         st.markdown("<p style='font-size:13px; font-weight:bold; margin-bottom:2px;'>📈 Жорий Валюта Курслари (KGS га нисбатан):</p>", unsafe_allow_html=True)
         
-        # Телефон вертиқал ҳолатда бўлса ҳам КУРСЛАРНИ БИР ҚАТОРДА ГOРИЗОНТАЛ кўрсатиш учун HTML/CSS код
+        # Горизонтал Скролл формат
         cards_html = '<div class="scroll-container">'
         for c in ALL_CURRENCIES:
             if c == "KGS": continue
@@ -275,9 +282,10 @@ else:
             st.markdown(f"##### 🧮 Мижозга бериладиган сумма: <span style='color:#b45309;'><b>{total_get:,.2f} {st.session_state.get_curr}</b></span>", unsafe_allow_html=True)
             
             if st.button("🚀 Амалиётни Якунлаш", type="primary", use_container_width=True):
+                kassa_qoldiq = st.session_state.kassa.get(st.session_state.get_curr, 0.0)
                 if amount_give <= 0: 
                     st.error("Миқдор хато!")
-                elif st.session_state.kassa[st.session_state.get_curr] < total_get: 
+                elif kassa_qoldiq < total_get: 
                     st.error("Кассада маблағ кам!")
                 else:
                     st.session_state.pending_operation = {
@@ -297,8 +305,8 @@ else:
                 """, unsafe_allow_html=True)
                 
                 if st.button("✅ Ҳа, юборилсин", type="primary", use_container_width=True):
-                    st.session_state.kassa[po['give_curr']] += po['amount_give']
-                    st.session_state.kassa[po['get_curr']] -= po['total_get']
+                    st.session_state.kassa[po['give_curr']] = st.session_state.kassa.get(po['give_curr'], 0.0) + po['amount_give']
+                    st.session_state.kassa[po['get_curr']] = st.session_state.kassa.get(po['get_curr'], 0.0) - po['total_get']
                     
                     st.session_state.history.append({
                         "ID": len(st.session_state.history) + 1,
@@ -325,16 +333,18 @@ else:
         for idx, c in enumerate(ALL_CURRENCIES):
             col_target = k_cols[idx % 2]
             with col_target:
+                # Бу ерда хавфсиз .get() функцияси қўшилди, энди KeyError хатоси чиқмайди!
+                qoldiq_summa = st.session_state.kassa.get(c, 0.0)
                 st.markdown(f"""
                     <div style='background:#ffffff; padding:6px; border-radius:6px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom:6px; text-align:center; border-left: 3px solid #0284c7; font-size:13px;'>
-                        <b>{c}</b>: <span style='color:#0284c7; font-weight:bold;'>{st.session_state.kassa[c]:,.2f}</span>
+                        <b>{c}</b>: <span style='color:#0284c7; font-weight:bold;'>{qoldiq_summa:,.2f}</span>
                     </div>
                 """, unsafe_allow_html=True)
 
         if st.session_state.current_role in ["Менежер", "Директор"]:
             with st.expander("🔧 Кассани қўлда тўғрилаш"):
                 fix_curr = st.selectbox("Валюта:", ALL_CURRENCIES, key="k_fix_c")
-                fix_amount = st.number_input("Янги қолдиқ миқдори:", value=float(st.session_state.kassa[fix_curr]), key="k_fix_a")
+                fix_amount = st.number_input("Янги қолдиқ миқдори:", value=float(st.session_state.kassa.get(fix_curr, 0.0)), key="k_fix_a")
                 if st.button("⚙️ Қолдиқни янгилаш", use_container_width=True, type="primary"):
                     st.session_state.kassa[fix_curr] = fix_amount
                     st.success("Касса янгиланди!")
@@ -357,10 +367,10 @@ else:
                 
                 with st.expander(f"⚙️ #{report['ID']} Бошқариш"):
                     if st.button("🗑️ Ўчириш", key=f"del_h_{idx}", use_container_width=True, type="primary"):
-                        st.session_state.kassa[report["Берилди"]] -= report["Миқдор"]
-                        st.session_state.kassa[report["Олинди"]] += report["Берилган Миқдор"]
+                        st.session_state.kassa[report["Берилди"]] = st.session_state.kassa.get(report["Берилди"], 0.0) - report["Миқдор"]
+                        st.session_state.kassa[report["Олинди"]] = st.session_state.kassa.get(report["Олинди"], 0.0) + report["Берилган Миқдор"]
                         st.session_state.history.pop(st.session_state.history.index(report))
-                        st.warning("Ўчирилди!")
+                        st.warning("Амалиёт бекор қилинди!")
                         st.rerun()
         else:
             st.info("Ҳисоботлар мавжуд эмас.")
@@ -380,7 +390,7 @@ else:
                         "Исм": d_name, "Телефон": d_phone, "Валюта": d_curr, 
                         "Аслий Қарз": d_amount, "Қолдиқ Қарз": d_amount, "Ҳолат": "Тўланмаган", "Тўловлар Тарихи": []
                     })
-                    st.session_state.kassa[d_curr] -= d_amount
+                    st.session_state.kassa[d_curr] = st.session_state.kassa.get(d_curr, 0.0) - d_amount
                     st.success("Қарз сақланди!")
                     st.rerun()
 
@@ -403,7 +413,7 @@ else:
                         if st.button("✅ Тўловни тасдиқлаш", key=f"btn_pay_{d_idx}", type="primary", use_container_width=True):
                             if pay_amount > 0:
                                 st.session_state.debts[d_idx]["Қолдиқ Қарз"] -= pay_amount
-                                st.session_state.kassa[debt["Валюта"]] += pay_amount
+                                st.session_state.kassa[debt["Валюта"]] = st.session_state.kassa.get(debt["Валюта"], 0.0) + pay_amount
                                 st.session_state.debts[d_idx]["Тўловлар Тарихи"].append(f"{pay_amount} {debt['Валюта']} қайтарилди.")
                                 if st.session_state.debts[d_idx]["Қолдиқ Қарз"] <= 0: 
                                     st.session_state.debts[d_idx]["Ҳолат"] = "Тўлиқ ёпилди"
@@ -411,7 +421,7 @@ else:
                                 st.rerun()
                                 
                     if st.button("🗑️ Қарзни ўчириш", key=f"del_debt_{d_idx}", use_container_width=True):
-                        st.session_state.kassa[debt["Валюта"]] += debt["Қолдиқ Қарз"]
+                        st.session_state.kassa[debt["Валюта"]] = st.session_state.kassa.get(debt["Валюта"], 0.0) + debt["Қолдиқ Қарз"]
                         st.session_state.debts.pop(d_idx)
                         st.rerun()
         else:
@@ -426,7 +436,7 @@ else:
             ex_reason = st.text_input("Сабаб:")
             if st.button("📉 Харажатни Сақлаш", type="primary", use_container_width=True):
                 if ex_amount > 0 and ex_reason:
-                    st.session_state.kassa[ex_curr] -= ex_amount
+                    st.session_state.kassa[ex_curr] = st.session_state.kassa.get(ex_curr, 0.0) - ex_amount
                     st.session_state.expenses.append({
                         "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M"), 
                         "Ходим": st.session_state.current_user, 
@@ -505,7 +515,7 @@ else:
                 st.markdown(f"""
                     <div class="emp-card">
                         <b>👤 {emp['Исм']}</b><br>
-                        📞 Тел: {emp['Telephone'] if 'Telephone' in emp else emp['Телефон']}<br>
+                        📞 Тел: {emp.get('Телефон', '-')}<br>
                         🪪 Паспорт: {emp.get('Паспорт','-')}<br>
                         🔑 Парол: <code>{emp.get('Пароль','****')}</code>
                     </div>
