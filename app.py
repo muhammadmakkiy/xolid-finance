@@ -32,7 +32,7 @@ st.markdown("""
         box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         border-top: 3px solid #d4af37;
         text-align: center;
-        min-width: 90px;
+        min-width: 95px;
     }
     
     /* Ихчам ходимлар картаси */
@@ -235,13 +235,14 @@ else:
                 st.session_state.show_success_flash = False
                 st.rerun()
 
-        st.markdown("<p style='font-size:13px; font-weight:bold; margin-bottom:2px;'>📈 Жорий Валюта Курслари (KGS га нисбатан):</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:13px; font-weight:bold; margin-bottom:4px;'>📈 Жорий Валюта Курслари (KGS га нисбатан):</p>", unsafe_allow_html=True)
         
-        # Телефонда ҳам горизонтал чиройли скролл бўлувчи блок
+        # ТЎҒИРЛАНГАН БЛОК: Энди рўйхатдаги барча валюталар USD каби кетма-кет чиқади
         cards_html = '<div class="scroll-container">'
         for c in ALL_CURRENCIES:
             if c == "KGS": 
-                continue
+                continue  # Асосий ўлчов бирлиги бўлгани учун ташлаб кетилади
+            
             cards_html += f"""
                 <div class="scroll-card">
                     <b style="font-size:14px; color:#0f172a;">{c}</b><br>
@@ -317,7 +318,6 @@ else:
                     st.session_state.pending_operation = None
                     st.rerun()
 
-
     # ==================== БОЛИМ 2: КАССА ВА ҲИСОБОТЛАР ====================
     elif st.session_state.sub_page == "📋 Касса ва Ҳисоботлар":
         st.markdown("##### 💰 Дўкон Кассасидаги Жорий Қолдиқлар")
@@ -366,10 +366,9 @@ else:
         else:
             st.info("Ҳисоботлар мавжуд эмас.")
 
-
     # ==================== БОЛИМ 3: ҚАРЗ ДАФТАРИ ====================
     elif st.session_state.sub_page == "📕 Қарз Дафтари":
-        with st.expander("➕ Янги Қарз Бериш"):
+        with st.expander("➕  Янги Қарз Бериш"):
             d_name = st.text_input("Қарздор исми:")
             d_phone = st.text_input("Телефон рақами:", "+996")
             d_curr = st.selectbox("Валюта:", ALL_CURRENCIES, key="d_c")
@@ -418,7 +417,6 @@ else:
         else:
             st.info("Қарздорлар рўйхати бўш.")
 
-
     # ==================== БОЛИМ 4: ХАРАЖАТЛАР ====================
     elif st.session_state.sub_page == "📉 Харажатлар":
         with st.expander("➕  Янги Харажат Киритиш"):
@@ -451,7 +449,6 @@ else:
         else:
             st.info("Харажатлар йўқ.")
 
-
     # ==================== БОЛИМ 5: КУРСЛАРНИ СОЗЛАШ ====================
     elif st.session_state.sub_page == "⚙️ Курсларна Созлаш":
         c_edit = st.selectbox("Валютани танланг:", ALL_CURRENCIES[1:], key="edit_c")
@@ -462,7 +459,6 @@ else:
             st.session_state.rates[c_edit]["sell"] = n_sell
             st.success("Курслар янгиланди!")
             st.rerun()
-
 
     # ==================== БОЛИМ 6: ДЎКОНЛАРНИ БОШҚАРИШ ====================
     elif st.session_state.sub_page == "🏢 Дўконларни Бошқариш":
@@ -480,7 +476,6 @@ else:
             if st.button("🗑️ Ўчириш", key=f"del_shop_{s_idx}"):
                 st.session_state.shops.pop(s_idx)
                 st.rerun()
-
 
     # ==================== БОЛИМ 7: ХОДИМЛАРНИ БОШҚАРИШ ====================
     elif st.session_state.sub_page == "👤 Ходимларни Бошқариш":
