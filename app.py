@@ -13,7 +13,7 @@ st.set_page_config(
 # --- ПРЕМИУМ ДИЗАЙН ВА СТИЛЛАР ---
 st.markdown("""
 <style>
-/* Умумий фон ва матн ранглари */
+/* Умумий фон */
 .main { background-color: #f1f5f9; color: #0f172a; }
 
 /* Лого ва Сарлавҳа стили */
@@ -44,7 +44,7 @@ st.markdown("""
     margin-top: 8px;
 }
 
-/* Касса қолдиқлари учун замонавий Excel катакчалари */
+/* Касса қолдиқлари жадвал карточкалари */
 .kassa-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -76,7 +76,7 @@ st.markdown("""
     color: #0284c7;
 }
 
-/* Горизонтал Жорий Курслар панелия */
+/* Горизонтал Жорий Курслар панели */
 .rates-panel {
     display: flex;
     flex-wrap: wrap;
@@ -98,7 +98,29 @@ st.markdown("""
 }
 .rate-item b { color: #0f172a; font-size: 14px; }
 
-/* Тугмалар дизайни */
+/* Тўлиқ Excel Элементлари Учун Стиллар */
+.excel-cell-header {
+    background-color: #f1f5f9;
+    color: #334155;
+    font-weight: bold;
+    border: 1px solid #cbd5e1;
+    padding: 6px;
+    text-align: center;
+    font-size: 13px;
+}
+.excel-cell-data {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 6px;
+    text-align: center;
+    font-size: 13px;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Тугмалар анимацияси */
 .stButton > button {
     border-radius: 8px;
     font-weight: 600;
@@ -110,7 +132,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Логотип URL манзили (Юборилган расм асосида ҳавола)
+# Логотип URL манзили
 LOGO_URL = "https://sub-m.com/file/obmen.png" 
 
 # Доимий кўриниб турувчи Логотип ва Сарлавҳа блоки
@@ -145,7 +167,8 @@ if 'employees' not in st.session_state:
 if 'history' not in st.session_state: 
     st.session_state.history = [
         {"ID": 1, "Вақт": "2026-07-08 10:00", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "USD", "Миқдор": 100.0, "Олинди": "KGS", "Берилган Миқдор": 8600.0, "Изоҳ": "Илк савдо"},
-        {"ID": 2, "Вақт": "2026-07-09 05:36", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "RUB", "Миқдор": 6000.0, "Олинди": "KGS", "Берилган Миқдор": 5640.0, "Изоҳ": ""}
+        {"ID": 2, "Вақт": "2026-07-09 05:36", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "RUB", "Миқдор": 6000.0, "Олинди": "KGS", "Берилган Миқдор": 5640.0, "Изоҳ": ""},
+        {"ID": 3, "Вақт": "2026-07-09 05:47", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "KZT", "Миқдор": 250000.0, "Олинди": "KGS", "Берилган Миқдор": 43750.0, "Изоҳ": ""}
     ]
 
 if 'kassa' not in st.session_state:
@@ -156,7 +179,6 @@ if 'kassa' not in st.session_state:
 
 if 'debts' not in st.session_state: st.session_state.debts = []
 
-# Ходим ва роллар
 MANAGERS = ["Муҳаммад Али"]
 DIRECTORS = ["Муҳаммад Диёр"]
 
@@ -165,8 +187,6 @@ if 'current_role' not in st.session_state: st.session_state.current_role = None
 if 'current_user' not in st.session_state: st.session_state.current_user = None
 if 'current_shop' not in st.session_state: st.session_state.current_shop = None
 if 'sub_page' not in st.session_state: st.session_state.sub_page = "Меню"
-
-# Амалиётларни таҳрирлаш учун вақтинчалик хотира
 if 'editing_report' not in st.session_state: st.session_state.editing_report = None
 
 # ==================== АВТОРИЗАЦИЯ САҲИФАСИ ====================
@@ -227,7 +247,6 @@ else:
     elif st.session_state.sub_page == "💸 Айирбошлаш":
         st.markdown("##### 📊 Жорий Валюта Курслари (Сотиш / Олиш)")
         
-        # Горизонтал ҳолатда курсларни кўрсатиш панелия
         rates_html = "<div class='rates-panel'>"
         for curr, val in st.session_state.rates.items():
             if curr != "KGS":
@@ -240,7 +259,6 @@ else:
         rates_html += "</div>"
         st.markdown(rates_html, unsafe_allow_html=True)
 
-        # Тезкор танлов тугмалари
         st.write("📥 Мижоз берадиган (Кириш валюта):")
         cols_give = st.columns(len(ALL_CURRENCIES))
         if 'active_give' not in st.session_state: st.session_state.active_give = "USD"
@@ -290,9 +308,8 @@ else:
 
     # ==================== БЎЛИМ 2: КАССА ВА ҲИСОБОТЛАР ====================
     elif st.session_state.sub_page == "📋 Касса ва Ҳисоботлар":
-        st.markdown("##### 🪙 Касса Қолдиқлари (Жадвал ичида)")
+        st.markdown("##### 🪙 Касса Қолдиқлари (Excel Катакчаларида)")
         
-        # Касса қолдиқларини каттароқ шрифтда ва чиройли жадвал шаклида чиқариш
         k_html = "<div class='kassa-grid'>"
         for c in ALL_CURRENCIES:
             k_html += f"""
@@ -304,74 +321,75 @@ else:
         st.markdown(k_html, unsafe_allow_html=True)
 
         st.markdown("---")
-        st.markdown("##### 📝 Ҳисоботлар ва Амалиётлар Базаси")
-
-        # Танланган қаторни аниқлаш
-        selected_row = None
+        st.markdown("##### 📊 Ҳисоботлар рўйхати (Мукаммал Excel жадвал кўриниши)")
 
         if st.session_state.history:
-            # Стримлит устунлари орқали жадвал ва унга мос галичкаларни чиқариш
+            # Жадвал Сарлавҳалари (Катакчалар билан)
+            h_cols = st.columns([0.4, 0.5, 1.4, 1.0, 1.4, 1.4, 1.5])
+            headers = ["☑️", "ID", "Вақт", "Ходим", "Кириш", "Чиқиш", "Изоҳ"]
+            for idx, text in enumerate(headers):
+                h_cols[idx].markdown(f"<div class='excel-cell-header'>{text}</div>", unsafe_allow_html=True)
+
+            selected_row = None
+
+            # Жадвал таркиби ва ҳар бир қаторнинг бошидаги галичка
             for rep in reversed(st.session_state.history):
-                col_chk, col_content = st.columns([0.1, 0.9])
+                r_cols = st.columns([0.4, 0.5, 1.4, 1.0, 1.4, 1.4, 1.5])
                 
-                # Галичка ҳар бир амалиётнинг тўғрисида жойлашади
-                with col_chk:
-                    is_chosen = st.checkbox("", key=f"chk_{rep['ID']}", label_visibility="collapsed")
+                with r_cols[0]:
+                    # Галичка (Checkbox) аниқ ушбу қаторнинг бошида туради
+                    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True) # Озгина текислаш
+                    is_chosen = st.checkbox("", key=f"chk_grid_{rep['ID']}", label_visibility="collapsed")
                     if is_chosen:
                         selected_row = rep
-                
-                with col_content:
-                    # Ҳар бир амалиёт учун чиройли Excel стилидаги чизиқли контейнер
-                    st.markdown(f"""
-                    <div style='border: 1px solid #cbd5e1; background: white; padding: 6px 12px; border-radius: 6px; margin-bottom: 5px; font-size:13px;'>
-                        <b>ID: {rep['ID']}</b> | 📅 {rep['Вақт']} | 👤 {rep['Ходим']}<br>
-                        <span style='color:green;'>📥 Кириш: +{rep['Миқдор']:,} {rep['Берилди']}</span> | 
-                        <span style='color:red;'>📤 Чиқиш: -{rep['Берилган Миқдор']:,.2f} {rep['Олинди']}</span> <br>
-                        <small style='color:#64748b;'>💬 Изоҳ: {rep['Изоҳ'] if rep['Изоҳ'] else 'Йўқ'}</small>
-                    </div>
-                    """, unsafe_allow_html=True)
+                        
+                r_cols[1].markdown(f"<div class='excel-cell-data'>{rep['ID']}</div>", unsafe_allow_html=True)
+                r_cols[2].markdown(f"<div class='excel-cell-data'>{rep['Вақт']}</div>", unsafe_allow_html=True)
+                r_cols[3].markdown(f"<div class='excel-cell-data'>{rep['Ходим']}</div>", unsafe_allow_html=True)
+                r_cols[4].markdown(f"<div class='excel-cell-data' style='color:green; font-weight:bold;'>+{rep['Миқдор']:,} {rep['Берилди']}</div>", unsafe_allow_html=True)
+                r_cols[5].markdown(f"<div class='excel-cell-data' style='color:red; font-weight:bold;'>-{rep['Берилган Миқдор']:,.1f} {rep['Олинди']}</div>", unsafe_allow_html=True)
+                r_cols[6].markdown(f"<div class='excel-cell-data'>{rep['Изоҳ'] if rep['Изоҳ'] else ''}</div>", unsafe_allow_html=True)
 
-            # Агар бирор амалиёт чап томондаги галичка орқали танланса, бошқарув тугмалари чиқади
+            # Галичка танланганда ҳаракатлар панели
             if selected_row:
-                st.markdown(f"**Танланди: ID {selected_row['ID']}**")
+                st.markdown(f"⚙️ **Танланди: ID {selected_row['ID']}**")
                 c1, c2 = st.columns(2)
                 
-                if c1.button("🗑️ Базадан Ўчириш", type="primary", use_container_width=True):
-                    # Кассани қайта тиклаш
+                if c1.button("🗑️ Танланганни Ўчириш", type="primary", use_container_width=True):
                     st.session_state.kassa[selected_row["Берилди"]] -= selected_row["Миқдор"]
                     st.session_state.kassa[selected_row["Олинди"]] += selected_row["Берилган Миқдор"]
                     st.session_state.history.remove(selected_row)
-                    st.success(f"ID {selected_row['ID']} муваффақиятли ўчирилди!")
+                    st.success(f"ID {selected_row['ID']} базадан ўчирилди!")
                     st.rerun()
                     
-                if c2.button("✏️ Тўғрилаш (Ўзгартириш)", use_container_width=True):
+                if c2.button("✏️ Танланганни Тўғрилаш", use_container_width=True):
                     st.session_state.editing_report = selected_row
                     st.rerun()
 
-            # Тўғрилаш / Ўзгартириш Ойнаси
+            # Тўғрилаш блоки
             if st.session_state.editing_report:
                 st.markdown("---")
-                st.markdown("##### 🛠️ Амалиётни таҳрирлаш")
+                st.markdown("##### 🛠️ Амалиёт мазмунини ўзгартириш")
                 ed_rep = st.session_state.editing_report
-                new_comment = st.text_input("Янги изоҳ киритинг:", value=ed_rep["Изоҳ"])
+                new_comment = st.text_input("Янги изоҳ / Маълумот:", value=ed_rep["Изоҳ"])
                 
-                if st.button("💾 Ўзгаришларни Сақлаш", type="primary"):
+                if st.button("💾 Ўзгаришни Сақлаш", type="primary"):
                     for item in st.session_state.history:
                         if item["ID"] == ed_rep["ID"]:
                             item["Изоҳ"] = new_comment
                     st.session_state.editing_report = None
-                    st.success("Маълумот ўзгартирилди!")
+                    st.success("Муваффақиятли янгиланди!")
                     st.rerun()
         else:
-            st.info("Базада амалиётлар мавжуд эмас.")
+            st.info("Ҳисоботлар базаси бўш.")
 
     # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ ====================
     elif st.session_state.sub_page == "📕 Қарз Дафтари":
-        st.info("Бу ерда қарздорлик амалиётлари ва уларнинг жадвали юритилади.")
+        st.info("Қарз дафтари бўлими фаол.")
 
     # ==================== БЎЛИМ 4: ХАРАЖАТЛАР ====================
     elif st.session_state.sub_page == "📉 Харажатлар":
-        st.info("Корхонанинг кундалик ва операцион чиқимлари шу бўлимда бошқарилади.")
+        st.info("Харажатлар бўлими фаол.")
 
     # ==================== БЎЛИМ 5: КУРСЛАРНИ СОЗЛАШ ====================
     elif st.session_state.sub_page == "⚙️ Курсларни Созлаш":
@@ -385,7 +403,7 @@ else:
             st.success("Курслар тизимда янгиланди!")
 
     # ---------------- ОРҚАГА ҚАЙТИШ ТУГМАСИ ----------------
-    if st.session_state.sub_page != "Menu" and st.session_state.sub_page != "Меню":
+    if st.session_state.sub_page != "Меню":
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("⬅️ Асосий Менюга Қайтиш", type="secondary", use_container_width=True):
             st.session_state.sub_page = "Меню"
