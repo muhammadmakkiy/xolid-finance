@@ -12,63 +12,63 @@ st.set_page_config(
 
 # Замонавий Премиум Дизайн ва СТИЛЛАР (Телефон учун ихчамлаштирилган)
 st.markdown("""
-    <style>
-    .main { background-color: #f8fafc; color: #0f172a; }
-    
-    /* Валюталарни бир қаторда (горизонтал скролл) кўрсатиш учун контейнер */
-    .scroll-container {
-        display: flex;
-        overflow-x: auto;
-        white-space: nowrap;
-        padding: 5px 0;
-        gap: 8px;
-        -webkit-overflow-scrolling: touch;
-    }
-    .scroll-card {
-        flex: 0 0 auto;
-        background: #ffffff;
-        border-radius: 8px;
-        padding: 8px 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        border-top: 3px solid #d4af37;
-        text-align: center;
-        min-width: 95px;
-    }
-    
-    /* Ихчам ходимлар картаси */
-    .emp-card {
-        background: #ffffff; border-radius: 10px; padding: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        border-left: 4px solid #0284c7; margin-bottom: 8px;
-        font-size: 13px;
-    }
-    
-    /* Ихчам жадвал типидаги карталар */
-    .table-card {
-        background: #ffffff; border-radius: 8px; padding: 10px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-        border: 1px solid #e2e8f0; margin-bottom: 8px;
-        font-size: 13px;
-        line-height: 1.4;
-    }
-    
-    .status-box {
-        background-color: #f0fdf4; border-left: 4px solid #d4af37;
-        padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 14px;
-    }
-    .success-popup {
-        background-color: #d1e7dd; color: #0f5132;
-        border: 2px dashed #198754; padding: 12px; border-radius: 8px;
-        text-align: center; font-size: 15px; font-weight: bold; margin: 8px 0;
-    }
-    
-    .app-title {
-        text-align: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;
-    }
-    .app-title h2 {
-        margin: 0; font-size: 22px; color: #0f172a; font-weight: 900; letter-spacing: 1px;
-    }
-    </style>
+<style>
+.main { background-color: #f8fafc; color: #0f172a; }
+
+/* Валюталарни бир қаторда (горизонтал скролл) кўрсатиш учун контейнер */
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 5px 0;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+.scroll-card {
+    flex: 0 0 auto;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    border-top: 3px solid #d4af37;
+    text-align: center;
+    min-width: 95px;
+}
+
+/* Ихчам ходимлар картаси */
+.emp-card {
+    background: #ffffff; border-radius: 10px; padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    border-left: 4px solid #0284c7; margin-bottom: 8px;
+    font-size: 13px;
+}
+
+/* Ихчам жадвал типидаги карталар */
+.table-card {
+    background: #ffffff; border-radius: 8px; padding: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    border: 1px solid #e2e8f0; margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.status-box {
+    background-color: #f0fdf4; border-left: 4px solid #d4af37;
+    padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 14px;
+}
+.success-popup {
+    background-color: #d1e7dd; color: #0f5132;
+    border: 2px dashed #198754; padding: 12px; border-radius: 8px;
+    text-align: center; font-size: 15px; font-weight: bold; margin: 8px 0;
+}
+
+.app-title {
+    text-align: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;
+}
+.app-title h2 {
+    margin: 0; font-size: 22px; color: #0f172a; font-weight: 900; letter-spacing: 1px;
+}
+</style>
 """, unsafe_allow_html=True)
 
 # Инглизча пул бирликлари
@@ -237,19 +237,12 @@ else:
 
         st.markdown("<p style='font-size:13px; font-weight:bold; margin-bottom:4px;'>📈 Жорий Валюта Курслари (KGS га нисбатан):</p>", unsafe_allow_html=True)
         
-        # ТЎҒИРЛАНГАН БЛОК: Энди рўйхатдаги барча валюталар USD каби кетма-кет чиқади
+        # БУТКУЛ ТОЗАЛАНГАН ВА ОРТИҚЧА БЎШЛИҚЛАРСИЗ БИР ҚАТОРЛИК HTML ХИТОБНОМА
         cards_html = '<div class="scroll-container">'
         for c in ALL_CURRENCIES:
             if c == "KGS": 
-                continue  # Асосий ўлчов бирлиги бўлгани учун ташлаб кетилади
-            
-            cards_html += f"""
-                <div class="scroll-card">
-                    <b style="font-size:14px; color:#0f172a;">{c}</b><br>
-                    <span style="color:#16a34a; font-size:11px;">📥 {st.session_state.rates[c]['buy']:.2f}</span><br>
-                    <span style="color:#dc2626; font-size:11px;">📤 {st.session_state.rates[c]['sell']:.2f}</span>
-                </div>
-            """
+                continue
+            cards_html += f'<div class="scroll-card"><b style="font-size:14px; color:#0f172a;">{c}</b><br><span style="color:#16a34a; font-size:11px;">📥 {st.session_state.rates[c]["buy"]:.2f}</span><br><span style="color:#dc2626; font-size:11px;">📤 {st.session_state.rates[c]["sell"]:.2f}</span></div>'
         cards_html += '</div>'
         st.markdown(cards_html, unsafe_allow_html=True)
             
@@ -473,7 +466,7 @@ else:
         st.markdown("##### 📋 Мавжуд Дўконлар")
         for s_idx, s_name in enumerate(st.session_state.shops):
             st.markdown(f"<div style='font-size:13px; margin-bottom:2px;'>📍 {s_name} дўкони</div>", unsafe_allow_html=True)
-            if st.button("🗑️ Ўчириш", key=f"del_shop_{s_idx}"):
+            if st.button("🗑️  Ўчириш", key=f"del_shop_{s_idx}"):
                 st.session_state.shops.pop(s_idx)
                 st.rerun()
 
