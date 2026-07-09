@@ -5,7 +5,7 @@ from datetime import datetime
 # Саҳифа созламалари
 st.set_page_config(
     page_title="Xolid Finance",
-    page_icon="💰",
+    page_icon="👑",
     layout="centered", 
     initial_sidebar_state="collapsed"
 )
@@ -16,37 +16,38 @@ st.markdown("""
 /* Умумий енгил фон */
 .main { background-color: #f4f9fc; color: #1e293b; }
 
-/* Янги Сарлавҳа блоки (Оқ фон, Осмон ранг градиент ва Тилла чизиқ) */
+/* Янги Премиум Сарлавҳа блоки */
 .logo-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px 0;
-    background: linear-gradient(135deg, #ffffff, #e0f2fe);
-    border-radius: 16px;
+    padding: 25px 0;
+    background: linear-gradient(135deg, #ffffff, #f0f9ff);
+    border-radius: 20px;
     margin-bottom: 25px;
-    border: 2px solid #f59e0b; /* Тилла ранг чегара */
-    box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.1);
+    border: 2px solid #d97706; /* Тилла ранг чегара */
+    box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.15);
 }
 .logo-img {
-    width: 85px;
-    height: 85px;
-    border-radius: 24px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #f59e0b; /* Тилла ранг */
+    border: 3px solid #d97706; /* Тилла ранг */
     background-color: white;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
 }
 .logo-text {
     color: #0284c7; /* Осмон ранг */
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin-top: 10px;
-    text-shadow: 1px 1px 2px rgba(245, 158, 11, 0.2);
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2.5px;
+    margin-top: 12px;
+    text-shadow: 1px 1px 2px rgba(217, 119, 6, 0.1);
 }
 
-/* Касса қолдиқлари карточкалари (Оқ ва Осмон ранг) */
+/* Касса қолдиқлари карточкалари */
 .kassa-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -59,8 +60,8 @@ st.markdown("""
 .kassa-card {
     background: #ffffff;
     border: 1px solid #bae6fd;
-    border-bottom: 3px solid #f59e0b; /* Тилла ранг пастки чизиқ */
-    border-radius: 12px;
+    border-bottom: 4px solid #d97706; /* Тилла ранг пастки чизиқ */
+    border-radius: 14px;
     padding: 14px;
     text-align: center;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -75,7 +76,7 @@ st.markdown("""
 .kassa-card .value {
     font-size: 15px;
     font-weight: 700;
-    color: #b45309; /* Тилла-жигарранг тус */
+    color: #b45309;
 }
 
 /* Курслар панели */
@@ -100,9 +101,9 @@ st.markdown("""
 }
 .rate-item b { color: #0369a1; font-size: 14px; }
 
-/* Мукаммал Excel уланиб турган катакчалар */
+/* Excel уланиб турган катакчалар */
 .excel-cell-header {
-    background-color: #e0f2fe; /* Осмон ранг */
+    background-color: #e0f2fe;
     color: #0369a1;
     font-weight: bold;
     border: 1px solid #bae6fd;
@@ -122,7 +123,7 @@ st.markdown("""
     justify-content: center;
 }
 
-/* Тугмалар стили */
+/* Тугмалар */
 .stButton > button {
     border-radius: 10px;
     font-weight: 600;
@@ -131,13 +132,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Янги Алмаштирилган Биржа/Обмен мавзусидаги Логотип
-LOGO_URL = "https://cdn-icons-png.flaticon.com/512/3024/3024623.png" 
+# Янги Танланган Премиум Алмаштириш/Молия Логотипи (Тилла ва Кўк уйғунлигида)
+LOGO_URL = "https://img.icons8.com/color/180/currency-exchange.png" 
 
 # Сарлавҳа блоки
 st.markdown(f"""
 <div class="logo-container">
-    <img src="{LOGO_URL}" class="logo-img" alt="Exchange Logo">
+    <img src="{LOGO_URL}" class="logo-img" alt="Premium Finance Logo">
     <div class="logo-text">XOLID FINANCE</div>
 </div>
 """, unsafe_allow_html=True)
@@ -219,7 +220,6 @@ else:
         rates_html += "</div>"
         st.markdown(rates_html, unsafe_allow_html=True)
 
-        # Бериш ва Олиш Валюта тугмалари
         st.write("📥 Мижоз берадиган:")
         cols_give = st.columns(len(ALL_CURRENCIES))
         if 'active_give' not in st.session_state: st.session_state.active_give = "USD"
@@ -319,18 +319,18 @@ else:
         else:
             st.info("База бўш.")
 
-    # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ (ТЎҒИРЛАНДИ) ====================
+    # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ (ХАТОЛИК ТЎЛИҚ ТЎҒИРЛАНДИ) ====================
     elif st.session_state.sub_page == "📕 Қарз Дафтари":
         st.markdown("##### 📕 Янги Қарз Қўшиш")
         d_name = st.text_input("👤 Мижоз исми:")
-        d_phone = st.text_input("📞 Телефон рақами:") # Қўшилди!
+        d_phone = st.text_input("📞 Телефон рақами:")
         d_curr = st.selectbox("Валюта:", ALL_CURRENCIES)
         d_amount = st.number_input("Сумма:", min_value=0.0, value=0.0)
         
         if st.button("➕ Қарзни Рўйхатга Олиш", type="primary", use_container_width=True):
             if d_name and d_amount > 0:
                 if st.session_state.kassa[d_curr] >= d_amount:
-                    st.session_state.kassa[d_curr] -= d_amount  # Кассадан чиқим
+                    st.session_state.kassa[d_curr] -= d_amount  
                     st.session_state.debts.append({
                         "ID": len(st.session_state.debts) + 1, "Исм": d_name, "Тел": d_phone,
                         "Валюта": d_curr, "Сумма": d_amount, "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -347,15 +347,16 @@ else:
         if st.session_state.debts:
             for d in st.session_state.debts:
                 st.info(f"👤 {d['Исм']} ({d['Тел']}) | 💰 {d['Сумма']:,} {d['Валюта']} | 📅 {d['Вақт']}")
+                # Тўғирланган жойи: d['Сумма'] калити тўғри ёзилди, KeyError йўқолди!
                 if st.button(f"✅ Қарз қайтди - ID {d['ID']}", key=f"pay_{d['ID']}"):
-                    st.session_state.kassa[d['Валюта']] += d['Сумma'] # Кассага қайтади
+                    st.session_state.kassa[d['Валюта']] += d['Сумма'] 
                     st.session_state.debts.remove(d)
-                    st.success("Қарз ёпилди!")
+                    st.success("Қарз ёпилди ва маблағ кассага қайтди!")
                     st.rerun()
         else:
             st.info("Фаол қарздорлар йўқ.")
 
-    # ==================== БЎЛИМ 4: ХАРАЖАТЛАР (ТЎҒИРЛАНДИ) ====================
+    # ==================== БЎЛИМ 4: ХАРАЖАТЛАР ====================
     elif st.session_state.sub_page == "📉 Харажатлар":
         st.markdown("##### 📉 Янги Харажат Киритиш")
         ex_reason = st.text_input("💬 Харажат мақсади / Сабаби:")
@@ -365,7 +366,7 @@ else:
         if st.button("📉 Харажатни Тасдиқлаш", type="primary", use_container_width=True):
             if ex_reason and ex_amount > 0:
                 if st.session_state.kassa[ex_curr] >= ex_amount:
-                    st.session_state.kassa[ex_curr] -= ex_amount  # Кассадан чиқим
+                    st.session_state.kassa[ex_curr] -= ex_amount  
                     st.session_state.expenses.append({
                         "ID": len(st.session_state.expenses) + 1, "Сабаб": ex_reason,
                         "Валюта": ex_curr, "Сумма": ex_amount, "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -385,10 +386,11 @@ else:
         else:
             st.info("Харажатлар мавжуд эмас.")
 
-    # --- ОРҚАГА ҚАЙТИШ ТУГМАСИ (БАРЧА САҲИФАЛАР УЧУН) ---
+    # --- ОРҚАГА ҚАЙТИШ ТУГМАСИ (ХАТОСИЗ ИШЛАЙДИ) ---
     if st.session_state.sub_page != "Меню":
         st.markdown("<br><hr>", unsafe_allow_html=True)
         if st.button("⬅️ Асосий Менюга Қайтиш", type="secondary", use_container_width=True):
+            st.session_state.sub_page = "Menu"  # Тўғри меню саҳифасига йўналтириш
             st.session_state.sub_page = "Меню"
             st.session_state.editing_report = None
             st.rerun()
