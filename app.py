@@ -6,7 +6,7 @@ from datetime import datetime
 st.set_page_config(
     page_title="Холид Финанс Обмен валюта",
     page_icon="💸",
-    layout="centered", # Телефон учун энг қулай формат
+    layout="centered", 
     initial_sidebar_state="collapsed"
 )
 
@@ -204,10 +204,10 @@ else:
             st.session_state.sub_page = "📉 Харажатлар"
             st.rerun()
             
-        # Менежер ва Директор тугмалари (Ортиқча ёзув олиб ташланди)
+        # Менежер ва Директор тугмалари
         if st.session_state.current_role in ["Менежер", "Директор"]:
             if st.button("⚙️ Курсларна Созлаш", use_container_width=True):
-                st.session_state.sub_page = "⚙️ Курсларнии Созлаш"
+                st.session_state.sub_page = "⚙️ Курсларна Созлаш"
                 st.rerun()
                 
             if st.button("🏢 Дўконларни Бошқариш", use_container_width=True):
@@ -237,10 +237,11 @@ else:
 
         st.markdown("<p style='font-size:13px; font-weight:bold; margin-bottom:2px;'>📈 Жорий Валюта Курслари (KGS га нисбатан):</p>", unsafe_allow_html=True)
         
-        # Телефон вертиқал ҳолатда бўлса ҳам КУРСЛАРНИ БИР ҚАТОРДА ГOРИЗОНТАЛ кўрсатиш учун HTML/CSS код
+        # Телефонда ҳам горизонтал чиройли скролл бўлувчи блок
         cards_html = '<div class="scroll-container">'
         for c in ALL_CURRENCIES:
-            if c == "KGS": continue
+            if c == "KGS": 
+                continue
             cards_html += f"""
                 <div class="scroll-card">
                     <b style="font-size:14px; color:#0f172a;">{c}</b><br>
@@ -356,7 +357,7 @@ else:
                 """, unsafe_allow_html=True)
                 
                 with st.expander(f"⚙️ #{report['ID']} Бошқариш"):
-                    if st.button("🗑️ Ўчириш", key=f"del_h_{idx}", use_container_width=True, type="primary"):
+                    if st.button("🗑️  Ўчириш", key=f"del_h_{idx}", use_container_width=True, type="primary"):
                         st.session_state.kassa[report["Берилди"]] -= report["Миқдор"]
                         st.session_state.kassa[report["Олинди"]] += report["Берилган Миқдор"]
                         st.session_state.history.pop(st.session_state.history.index(report))
@@ -420,7 +421,7 @@ else:
 
     # ==================== БОЛИМ 4: ХАРАЖАТЛАР ====================
     elif st.session_state.sub_page == "📉 Харажатлар":
-        with st.expander("➕ Янги Харажат Киритиш"):
+        with st.expander("➕  Янги Харажат Киритиш"):
             ex_curr = st.selectbox("Валюта:", ALL_CURRENCIES, key="ex_c")
             ex_amount = st.number_input("Миқдор:", min_value=0.0, key="ex_a")
             ex_reason = st.text_input("Сабаб:")
@@ -505,7 +506,7 @@ else:
                 st.markdown(f"""
                     <div class="emp-card">
                         <b>👤 {emp['Исм']}</b><br>
-                        📞 Тел: {emp['Telephone'] if 'Telephone' in emp else emp['Телефон']}<br>
+                        📞 Тел: {emp.get('Телефон', '-')}<br>
                         🪪 Паспорт: {emp.get('Паспорт','-')}<br>
                         🔑 Парол: <code>{emp.get('Пароль','****')}</code>
                     </div>
