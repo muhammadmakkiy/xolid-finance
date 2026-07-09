@@ -44,7 +44,7 @@ st.markdown("""
     margin-top: 8px;
 }
 
-/* Касса қолдиқлари жадвал карточкалари */
+/* Касса қолдиқлари карточкалари */
 .kassa-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -98,29 +98,28 @@ st.markdown("""
 }
 .rate-item b { color: #0f172a; font-size: 14px; }
 
-/* Тўлиқ Excel Элементлари Учун Стиллар */
+/* Excel Жадвал Элементлари Учун Стиллар */
 .excel-cell-header {
-    background-color: #f1f5f9;
-    color: #334155;
+    background-color: #e2e8f0;
+    color: #1e293b;
     font-weight: bold;
     border: 1px solid #cbd5e1;
-    padding: 6px;
+    padding: 8px;
     text-align: center;
     font-size: 13px;
 }
 .excel-cell-data {
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    padding: 6px;
+    border: 1px solid #cbd5e1;
+    padding: 8px;
     text-align: center;
     font-size: 13px;
-    min-height: 35px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Тугмалар анимацияси */
 .stButton > button {
     border-radius: 8px;
     font-weight: 600;
@@ -156,7 +155,6 @@ if 'rates' not in st.session_state:
     }
 
 if 'shops' not in st.session_state: st.session_state.shops = ["Дўстлик", "Наримон"]
-if 'expenses' not in st.session_state: st.session_state.expenses = []
 
 if 'employees' not in st.session_state:
     st.session_state.employees = [
@@ -164,6 +162,7 @@ if 'employees' not in st.session_state:
         {"Исм": "Ҳузайфа", "Телефон": "+996553707490", "Пароль": "8888"}
     ]
 
+# Айирбошлаш тарихи
 if 'history' not in st.session_state: 
     st.session_state.history = [
         {"ID": 1, "Вақт": "2026-07-08 10:00", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "USD", "Миқдор": 100.0, "Олинди": "KGS", "Берилган Миқдор": 8600.0, "Изоҳ": "Илк савдо"},
@@ -171,13 +170,24 @@ if 'history' not in st.session_state:
         {"ID": 3, "Вақт": "2026-07-09 05:47", "Дўкон": "Дўстлик", "Ходим": "Одилжон", "Берилди": "KZT", "Миқдор": 250000.0, "Олинди": "KGS", "Берилган Миқдор": 43750.0, "Изоҳ": ""}
     ]
 
+# Қарзлар базаси
+if 'debts' not in st.session_state:
+    st.session_state.debts = [
+        {"ID": 1, "Кимга": "Алихон", "Валюта": "USD", "Сумма": 500.0, "Вақт": "2026-07-09 08:00", "Ҳолат": "Қарз берилди"}
+    ]
+
+# Харажатлар базаси
+if 'expenses' not in st.session_state:
+    st.session_state.expenses = [
+        {"ID": 1, "Сабаб": "Обед учун", "Валюта": "KGS", "Сумма": 450.0, "Вақт": "2026-07-09 08:15"}
+    ]
+
+# Касса қолдиқлари
 if 'kassa' not in st.session_state:
     st.session_state.kassa = {
         "KGS": 94360.0, "USD": 5000.0, "EUR": 5000.0, "RUB": 106000.0,
         "CNY": 5000.0, "KZT": 5000.0, "UZS": 100000.0, "MBANK": 5000.0
     }
-
-if 'debts' not in st.session_state: st.session_state.debts = []
 
 MANAGERS = ["Муҳаммад Али"]
 DIRECTORS = ["Муҳаммад Диёр"]
@@ -321,75 +331,128 @@ else:
         st.markdown(k_html, unsafe_allow_html=True)
 
         st.markdown("---")
-        st.markdown("##### 📊 Ҳисоботлар рўйхати (Мукаммал Excel жадвал кўриниши)")
+        st.markdown("##### 📊 Сиз сўраган соддалаштирилган жадвал кўриниши")
 
         if st.session_state.history:
-            # Жадвал Сарлавҳалари (Катакчалар билан)
-            h_cols = st.columns([0.4, 0.5, 1.4, 1.0, 1.4, 1.4, 1.5])
-            headers = ["☑️", "ID", "Вақт", "Ходим", "Кириш", "Чиқиш", "Изоҳ"]
+            # Устунлар ўлчами ва номланиши
+            h_cols = st.columns([0.4, 1.4, 1.4, 1.3, 1.5])
+            headers = ["☑️", "📥 Кириш Валюта", "📤 Чиқиш Валюта", "📅 Сана ва Вақт", "💬 Изоҳ"]
             for idx, text in enumerate(headers):
                 h_cols[idx].markdown(f"<div class='excel-cell-header'>{text}</div>", unsafe_allow_html=True)
 
             selected_row = None
 
-            # Жадвал таркиби ва ҳар бир қаторнинг бошидаги галичка
+            # Тарих элементларини уланиб турган жадвал кўринишида чиқариш
             for rep in reversed(st.session_state.history):
-                r_cols = st.columns([0.4, 0.5, 1.4, 1.0, 1.4, 1.4, 1.5])
+                r_cols = st.columns([0.4, 1.4, 1.4, 1.3, 1.5])
                 
                 with r_cols[0]:
-                    # Галичка (Checkbox) аниқ ушбу қаторнинг бошида туради
-                    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True) # Озгина текислаш
+                    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
                     is_chosen = st.checkbox("", key=f"chk_grid_{rep['ID']}", label_visibility="collapsed")
                     if is_chosen:
                         selected_row = rep
                         
-                r_cols[1].markdown(f"<div class='excel-cell-data'>{rep['ID']}</div>", unsafe_allow_html=True)
-                r_cols[2].markdown(f"<div class='excel-cell-data'>{rep['Вақт']}</div>", unsafe_allow_html=True)
-                r_cols[3].markdown(f"<div class='excel-cell-data'>{rep['Ходим']}</div>", unsafe_allow_html=True)
-                r_cols[4].markdown(f"<div class='excel-cell-data' style='color:green; font-weight:bold;'>+{rep['Миқдор']:,} {rep['Берилди']}</div>", unsafe_allow_html=True)
-                r_cols[5].markdown(f"<div class='excel-cell-data' style='color:red; font-weight:bold;'>-{rep['Берилган Миқдор']:,.1f} {rep['Олинди']}</div>", unsafe_allow_html=True)
-                r_cols[6].markdown(f"<div class='excel-cell-data'>{rep['Изоҳ'] if rep['Изоҳ'] else ''}</div>", unsafe_allow_html=True)
+                r_cols[1].markdown(f"<div class='excel-cell-data' style='color:green; font-weight:bold;'>{rep['Миқдор']:,} {rep['Берилди']}</div>", unsafe_allow_html=True)
+                r_cols[2].markdown(f"<div class='excel-cell-data' style='color:red; font-weight:bold;'>{rep['Берилган Миқдор']:,.1f} {rep['Олинди']}</div>", unsafe_allow_html=True)
+                r_cols[3].markdown(f"<div class='excel-cell-data'>{rep['Вақт']}</div>", unsafe_allow_html=True)
+                r_cols[4].markdown(f"<div class='excel-cell-data'>{rep['Изоҳ'] if rep['Изоҳ'] else '-'}</div>", unsafe_allow_html=True)
 
             # Галичка танланганда ҳаракатлар панели
             if selected_row:
-                st.markdown(f"⚙️ **Танланди: ID {selected_row['ID']}**")
+                st.markdown(f"⚙️ **Танланди: Амалиёт ID {selected_row['ID']}**")
                 c1, c2 = st.columns(2)
                 
-                if c1.button("🗑️ Танланганни Ўчириш", type="primary", use_container_width=True):
+                if c1.button("🗑️ Базадан Ўчириш", type="primary", use_container_width=True):
                     st.session_state.kassa[selected_row["Берилди"]] -= selected_row["Миқдор"]
                     st.session_state.kassa[selected_row["Олинди"]] += selected_row["Берилган Миқдор"]
                     st.session_state.history.remove(selected_row)
-                    st.success(f"ID {selected_row['ID']} базадан ўчирилди!")
+                    st.success("Амалиёт ўчирилди ва касса қайта тикланди!")
                     st.rerun()
                     
-                if c2.button("✏️ Танланганни Тўғрилаш", use_container_width=True):
+                if c2.button("✏️ Сатрни Тўғрилаш", use_container_width=True):
                     st.session_state.editing_report = selected_row
                     st.rerun()
 
-            # Тўғрилаш блоки
+            # Тўғрилаш ойнаси
             if st.session_state.editing_report:
                 st.markdown("---")
-                st.markdown("##### 🛠️ Амалиёт мазмунини ўзгартириш")
+                st.markdown("##### 🛠️ Изоҳни ўзгартириш")
                 ed_rep = st.session_state.editing_report
-                new_comment = st.text_input("Янги изоҳ / Маълумот:", value=ed_rep["Изоҳ"])
-                
-                if st.button("💾 Ўзгаришни Сақлаш", type="primary"):
+                new_comment = st.text_input("Янги маълумот киритинг:", value=ed_rep["Изоҳ"])
+                if st.button("💾 Сақлаш", type="primary"):
                     for item in st.session_state.history:
                         if item["ID"] == ed_rep["ID"]:
                             item["Изоҳ"] = new_comment
                     st.session_state.editing_report = None
-                    st.success("Муваффақиятли янгиланди!")
+                    st.success("Ўзгариш сақланди!")
                     st.rerun()
         else:
             st.info("Ҳисоботлар базаси бўш.")
 
-    # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ ====================
+    # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ (ТЎЛИҚ ИШЛАЙДИ) ====================
     elif st.session_state.sub_page == "📕 Қарз Дафтари":
-        st.info("Қарз дафтари бўлими фаол.")
+        st.markdown("##### 📕 Янги Қарз Ёзиш")
+        d_name = st.text_input("👤 Кимга (Исми):")
+        d_curr = st.selectbox("Валюта тури:", ALL_CURRENCIES, key="debt_c")
+        d_amount = st.number_input("Сумма:", min_value=0.0, value=0.0)
+        
+        if st.button("➕ Қарзни Базага Қўшиш", type="primary", use_container_width=True):
+            if d_name and d_amount > 0:
+                if st.session_state.kassa[d_curr] >= d_amount:
+                    st.session_state.kassa[d_curr] -= d_amount  # Кассадан чиқиб кетади
+                    st.session_state.debts.append({
+                        "ID": len(st.session_state.debts) + 1, "Кимга": d_name, "Валюта": d_curr,
+                        "Сумма": d_amount, "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M"), "Ҳолат": "Берилди"
+                    })
+                    st.success("Қарз муваффақиятли ёзилди ва кассадан айирилди!")
+                    st.rerun()
+                else:
+                    st.error("Кассада бунча маблағ йўқ!")
+            else:
+                st.warning("Илтимос, исм ва суммани тўғри киритинг!")
 
-    # ==================== БЎЛИМ 4: ХАРАЖАТЛАР ====================
+        st.markdown("---")
+        st.markdown("##### 📜 Жорий Берлиган Қарзлар Рўйхати")
+        if st.session_state.debts:
+            for d in st.session_state.debts:
+                st.markdown(f"👤 **{d['Кимга']}** | 💰 {d['Сумма']:,} {d['Валюта']} | 📅 {d['Вақт']} | Status: `{d['Ҳолат']}`")
+                if st.button(f"✅ Қарз қайтди (Узилди) - ID {d['ID']}", key=f"pay_{d['ID']}"):
+                    st.session_state.kassa[d['Валюта']] += d['Сумма']  # Кассага қайтади
+                    st.session_state.debts.remove(d)
+                    st.success("Қарз узилди ва кассага қайта қўшилди!")
+                    st.rerun()
+        else:
+            st.info("Ҳозирча фаол қарзлар йўқ.")
+
+    # ==================== БЎЛИМ 4: ХАРАЖАТЛАР (ТЎЛИҚ ИШЛАЙДИ) ====================
     elif st.session_state.sub_page == "📉 Харажатлар":
-        st.info("Харажатлар бўлими фаол.")
+        st.markdown("##### 📉 Янги Чиқим / Харажат Қўшиш")
+        ex_reason = st.text_input("💬 Харажат мақсади (Масалан: Обед, Аренда, Свет):")
+        ex_curr = st.selectbox("Қайси валютадан тўланади:", ALL_CURRENCIES, key="ex_c")
+        ex_amount = st.number_input("Харажат суммаси:", min_value=0.0, value=0.0)
+        
+        if st.button("📉 Харажатни Тасдиқлаш", type="primary", use_container_width=True):
+            if ex_reason and ex_amount > 0:
+                if st.session_state.kassa[ex_curr] >= ex_amount:
+                    st.session_state.kassa[ex_curr] -= ex_amount  # Кассадан чиқиб кетади
+                    st.session_state.expenses.append({
+                        "ID": len(st.session_state.expenses) + 1, "Сабаб": ex_reason,
+                        "Валюта": ex_curr, "Сумма": ex_amount, "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M")
+                    })
+                    st.success("Харажат базага қўшилди ва кассадан чиқим қилинди!")
+                    st.rerun()
+                else:
+                    st.error("Кассада етарли маблағ мавжуд эмас!")
+            else:
+                st.warning("Маълумотларни тўлиқ тўлдиринг!")
+
+        st.markdown("---")
+        st.markdown("##### 📋 Бугунги Харажатлар Рўйхати")
+        if st.session_state.expenses:
+            for ex in st.session_state.expenses:
+                st.markdown(f"❌ **{ex['Сабаб']}** uchun: -{ex['Сумма']:,} {ex['Валюта']} | 📅 {ex['Вақт']}")
+        else:
+            st.info("Бугун ҳали харажатлар киритилмади.")
 
     # ==================== БЎЛИМ 5: КУРСЛАРНИ СОЗЛАШ ====================
     elif st.session_state.sub_page == "⚙️ Курсларни Созлаш":
