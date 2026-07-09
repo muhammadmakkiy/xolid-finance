@@ -10,33 +10,40 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- ЭСКИ СЕССИЯ ХАТОЛИКЛАРИНИ ТОЗАЛАШ ВА ҚАЙТА ЮКЛАШ ---
+if 'debts' in st.session_state:
+    # Агар эски хатолик билан ёзилган маълумот бўлса, тозалаб юборамиз
+    for debt in st.session_state.debts:
+        if 'Сумma' in debt:
+            debt['Сумма'] = debt.pop('Сумma')
+
 # --- ЕНГИЛ ВА ҲАШАМАТЛИ ДИЗАЙН (ОҚ, ОСМОН ВА ТИЛЛА РАНГ) ---
 st.markdown("""
 <style>
 /* Умумий енгил фон */
 .main { background-color: #f4f9fc; color: #1e293b; }
 
-/* Янги Премиум Сарлавҳа блоки */
+/* Премиум Сарлавҳа блоки */
 .logo-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 25px 0;
-    background: linear-gradient(135deg, #ffffff, #f0f9ff);
+    background: linear-gradient(135deg, #ffffff, #e0f2fe);
     border-radius: 20px;
     margin-bottom: 25px;
     border: 2px solid #d97706; /* Тилла ранг чегара */
     box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.15);
 }
 .logo-img {
-    width: 90px;
-    height: 90px;
+    width: 95px;
+    height: 95px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #d97706; /* Тилла ранг */
     background-color: white;
-    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
 }
 .logo-text {
     color: #0284c7; /* Осмон ранг */
@@ -132,13 +139,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Янги Танланган Премиум Алмаштириш/Молия Логотипи (Тилла ва Кўк уйғунлигида)
-LOGO_URL = "https://img.icons8.com/color/180/currency-exchange.png" 
+# Янги Танланган Жуда Премиум ва Ҳашаматли Логотип (Олтин Тож ва Молия тимсоли)
+LOGO_URL = "https://cdn-icons-png.flaticon.com/512/2984/2984134.png" 
 
 # Сарлавҳа блоки
 st.markdown(f"""
 <div class="logo-container">
-    <img src="{LOGO_URL}" class="logo-img" alt="Premium Finance Logo">
+    <img src="{LOGO_URL}" class="logo-img" alt="Premium Gold Logo">
     <div class="logo-text">XOLID FINANCE</div>
 </div>
 """, unsafe_allow_html=True)
@@ -319,21 +326,25 @@ else:
         else:
             st.info("База бўш.")
 
-    # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ (ХАТОЛИК ТЎЛИҚ ТЎҒИРЛАНДИ) ====================
+    # ==================== БЎЛИМ 3: ҚАРЗ ДАФТАРИ (ХАТОЛИК БУТУНЛАЙ ТУЗАТИЛДИ) ====================
     elif st.session_state.sub_page == "📕 Қарз Дафтари":
         st.markdown("##### 📕 Янги Қарз Қўшиш")
-        d_name = st.text_input("👤 Мижоз исми:")
-        d_phone = st.text_input("📞 Телефон рақами:")
-        d_curr = st.selectbox("Валюта:", ALL_CURRENCIES)
-        d_amount = st.number_input("Сумма:", min_value=0.0, value=0.0)
+        d_name = st.text_input("👤 Мижоз исми:", key="debt_name_input")
+        d_phone = st.text_input("📞 Телефон рақами:", key="debt_phone_input")
+        d_curr = st.selectbox("Валюта:", ALL_CURRENCIES, key="debt_curr_select")
+        d_amount = st.number_input("Сумма:", min_value=0.0, value=0.0, key="debt_amount_input")
         
         if st.button("➕ Қарзни Рўйхатга Олиш", type="primary", use_container_width=True):
             if d_name and d_amount > 0:
                 if st.session_state.kassa[d_curr] >= d_amount:
                     st.session_state.kassa[d_curr] -= d_amount  
                     st.session_state.debts.append({
-                        "ID": len(st.session_state.debts) + 1, "Исм": d_name, "Тел": d_phone,
-                        "Валюта": d_curr, "Сумма": d_amount, "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M")
+                        "ID": len(st.session_state.debts) + 1, 
+                        "Исм": d_name, 
+                        "Тел": d_phone,
+                        "Валюта": d_curr, 
+                        "Сумма": d_amount, # Калит фақат тўғри форматда сақланади
+                        "Вақт": datetime.now().strftime("%Y-%m-%d %H:%M")
                     })
                     st.success("Қарз муваффақиятли ёзилди!")
                     st.rerun()
@@ -343,13 +354,16 @@ else:
                 st.warning("Маълумотларни тўлиқ киритинг!")
 
         st.markdown("---")
-        st.markdown("##### 📜 Берлиган Қарзлар")
+        st.markdown("##### 📜 Берилган Қарзлар")
         if st.session_state.debts:
-            for d in st.session_state.debts:
-                st.info(f"👤 {d['Исм']} ({d['Тел']}) | 💰 {d['Сумма']:,} {d['Валюта']} | 📅 {d['Вақт']}")
-                # Тўғирланган жойи: d['Сумма'] калити тўғри ёзилди, KeyError йўқолди!
+            for d in list(st.session_state.debts):
+                # Эски хатолик қолдиқларидан ҳимоя қилиш
+                debt_sum = d.get('Сумма', d.get('Сумma', 0.0))
+                
+                st.info(f"👤 {d.get('Исм','-')} ({d.get('Тел','-')}) | 💰 {debt_sum:,} {d.get('Валюта','KGS')} | 📅 {d.get('Вақт','-')}")
+                
                 if st.button(f"✅ Қарз қайтди - ID {d['ID']}", key=f"pay_{d['ID']}"):
-                    st.session_state.kassa[d['Валюта']] += d['Сумма'] 
+                    st.session_state.kassa[d['Валюта']] += debt_sum 
                     st.session_state.debts.remove(d)
                     st.success("Қарз ёпилди ва маблағ кассага қайтди!")
                     st.rerun()
@@ -386,11 +400,10 @@ else:
         else:
             st.info("Харажатлар мавжуд эмас.")
 
-    # --- ОРҚАГА ҚАЙТИШ ТУГМАСИ (ХАТОСИЗ ИШЛАЙДИ) ---
+    # --- ОРҚАГА ҚАЙТИШ ТУГМАСИ ---
     if st.session_state.sub_page != "Меню":
         st.markdown("<br><hr>", unsafe_allow_html=True)
         if st.button("⬅️ Асосий Менюга Қайтиш", type="secondary", use_container_width=True):
-            st.session_state.sub_page = "Menu"  # Тўғри меню саҳифасига йўналтириш
             st.session_state.sub_page = "Меню"
             st.session_state.editing_report = None
             st.rerun()
