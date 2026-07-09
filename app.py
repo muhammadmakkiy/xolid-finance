@@ -10,17 +10,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Замонавий Премиум Дизайн ва СТИЛЛАР
+# Замонавий Премиум Дизайн ва СТИЛЛАР (Телефон учун ихчамлаштирилган)
 st.markdown("""
     <style>
     .main { background-color: #f8fafc; color: #0f172a; }
     
-    /* Валюталарни бир қаторда (горизонтал скролл) кўрсатиш */
+    /* Валюталарни бир қаторда (горизонтал скролл) кўрсатиш учун контейнер */
     .scroll-container {
         display: flex;
         overflow-x: auto;
         white-space: nowrap;
-        padding: 5px 0;
+        padding: 8px 0;
         gap: 8px;
         -webkit-overflow-scrolling: touch;
     }
@@ -98,11 +98,10 @@ if 'history' not in st.session_state:
     ]
 if 'expenses' not in st.session_state: st.session_state.expenses = []
 
-# Касса базасини доим инглизча валюталар билан тўлдириш
+# Кассани инглизча калитлар билан хавфсиз созлаш
 if 'kassa' not in st.session_state:
     st.session_state.kassa = {}
 
-# Эски маблағлар ёки янги маблағларни инглизча калитлар билан ишончли текшириш
 for c in ALL_CURRENCIES:
     if c not in st.session_state.kassa:
         st.session_state.kassa[c] = 100000.0 if c in ["KGS", "RUB", "UZS"] else 5000.0
@@ -228,7 +227,7 @@ else:
     # ---------------- САҲИФАЛАР УЧУН ОРҚАГА ҚАЙТИШ ТУГМАСИ ----------------
     if st.session_state.sub_page != "Меню":
         if st.button("⬅️ Orqaga", type="secondary", use_container_width=True):
-            st.session_state.sub_page = "Меню"
+            st.session_state.sub_page = "Menyu"
             st.session_state.pending_operation = None
             st.session_state.show_success_flash = False
             st.rerun()
@@ -244,10 +243,11 @@ else:
 
         st.markdown("<p style='font-size:13px; font-weight:bold; margin-bottom:2px;'>📈 Жорий Валюта Курслари (KGS га нисбатан):</p>", unsafe_allow_html=True)
         
-        # Горизонтал Скролл формат
+        # Горизонтал Скролл формат (Ҳеч қандай тег хатосисиз, мукаммал цикл)
         cards_html = '<div class="scroll-container">'
         for c in ALL_CURRENCIES:
-            if c == "KGS": continue
+            if c == "KGS": 
+                continue
             cards_html += f"""
                 <div class="scroll-card">
                     <b style="font-size:14px; color:#0f172a;">{c}</b><br>
@@ -333,7 +333,6 @@ else:
         for idx, c in enumerate(ALL_CURRENCIES):
             col_target = k_cols[idx % 2]
             with col_target:
-                # Бу ерда хавфсиз .get() функцияси қўшилди, энди KeyError хатоси чиқмайди!
                 qoldiq_summa = st.session_state.kassa.get(c, 0.0)
                 st.markdown(f"""
                     <div style='background:#ffffff; padding:6px; border-radius:6px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom:6px; text-align:center; border-left: 3px solid #0284c7; font-size:13px;'>
